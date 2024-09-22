@@ -18,7 +18,7 @@ License: You must have a valid license from official store to legally use the th
     <!-- Title  -->
     <title>Archiving System </title>
     <meta name="description" content="archives">
-
+    <meta property="og:image" content="img/landing-background2.png" />
     <!-- Development css -->
     <link rel="stylesheet" href="src/css/style.css">
 
@@ -31,7 +31,7 @@ License: You must have a valid license from official store to legally use the th
 
 
     <!-- Favicon  -->
-    <link rel="icon" type="image/png" href="{{ asset('img/man.png') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('img/landing-background2.png') }}" />
 </head>
 
 <body class="text-gray-700">
