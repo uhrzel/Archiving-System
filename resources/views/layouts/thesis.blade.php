@@ -43,18 +43,21 @@
                             @csrf
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="thesis_course">Course</label>
-                                    <input type="text" class="form-control" id="thesis_course" name="thesis_course" required>
-                                </div>
-                                <div class="form-group">
                                     <label for="thesis_title">Title</label>
                                     <textarea class="form-control" id="thesis_title" name="thesis_title" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="thesis_description">Description</label>
-                                    <textarea class="form-control" id="thesis_description" name="thesis_description" required></textarea>
+                                    <label for="thesis_file">Thesis File</label>
+                                    <input type="file" class="form-control" id="thesis_file" name="thesis_file" required>
                                 </div>
-
+                                <div class="form-group">
+                                    <label for="thesis_course">Course</label>
+                                    <input type="text" class="form-control" id="thesis_course" name="thesis_course" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="thesis_abstract">Abstract</label>
+                                    <textarea class="form-control" id="thesis_abstract" name="thesis_abstract" required></textarea>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -85,7 +88,7 @@
                             <th>#</th>
                             <th>Title</th>
                             <th>Course</th>
-                            <th>Status</th>
+                            <th>Abstract</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
