@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Thesis; // Import the Thesis model
 
 Route::get('/', function () {
-    return view('welcome');
+    $thesis = Thesis::all(); // Fetch all thesis records from the database
+    return view('welcome', compact('thesis')); // Pass the thesis data to the view
 });
-
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
@@ -30,6 +31,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/courses', [App\Http\Controllers\CourseController::class, 'index'])->name('courses.index')->middleware('admin');
     Route::put('/admin/courses/{id}', [App\Http\Controllers\CourseController::class, 'update'])->name('courses.update')->middleware('admin');
     Route::delete('/admin/courses/{course}', [App\Http\Controllers\CourseController::class, 'destroy'])->name('courses.destroy')->middleware('admin');
+
+    Route::get('/thesis', [App\Http\Controllers\ThesisController::class, 'index'])->name('thesis.index');
+    Route::post('/thesis', [App\Http\Controllers\ThesisController::class, 'store'])->name('thesis.store');
+    Route::put('/thesis/{id}', [App\Http\Controllers\ThesisController::class, 'update'])->name('thesis.update');
+    Route::delete('/thesis/{thesis}', [App\Http\Controllers\ThesisController::class, 'destroy'])->name('thesis.destroy');
+
 
     Route::get('/students', [App\Http\Controllers\AdminController::class, 'index'])->name('students.index')->middleware('admin');
     Route::get('/students/edit/{id}', [App\Http\Controllers\AdminController::class, 'edit'])->name('students.edit')->middleware('admin');

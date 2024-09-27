@@ -81,7 +81,7 @@ License: You must have a valid license from official store to legally use the th
                                 <a class="active block py-3 lg:py-7 px-6 border-b-2 border-transparent" href="#hero">Home</a>
                             </li>
                             <li class="relative hover:text-black">
-                                <a class="block py-3 lg:py-7 px-6 border-b-2 border-transparent" href="#news">Thesis</a>
+                                <a class="block py-3 lg:py-7 px-6 border-b-2 border-transparent" href="#thesis">Thesis</a>
                             </li>
                             <li class="relative hover:text-black">
                                 <a class="block py-3 lg:py-7 px-6 border-b-2 border-transparent" href="#about">About</a>
@@ -219,7 +219,7 @@ License: You must have a valid license from official store to legally use the th
         </div><!-- end Hero -->
 
         <!-- start services -->
-        <div id="advertisement" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 bg-white">
+        <div id="thesis" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 bg-white">
             <div class="container xl:max-w-6xl mx-auto px-4">
                 <!-- Heading start -->
                 <header class="text-center mx-auto mb-12 lg:px-20">
@@ -234,31 +234,25 @@ License: You must have a valid license from official store to legally use the th
 
                 <!-- row -->
                 <div class="flex flex-wrap flex-row -mx-4 text-center">
+                    @foreach ($thesis as $thesis_data)
+                    <div class="w-full md:w-1/3 px-4 mb-8">
+                        <div class="bg-white shadow-md rounded-lg p-6 flex flex-col h-full">
+                            <div class="flex-grow">
+                                <h3 class="text-lg font-bold text-black mb-2">{{ $thesis_data->thesis_title }}</h3>
+                                <p class="text-gray-600 mb-4">Abstract: {{ $thesis_data->abstract }}</p>
+                            </div>
+                            <iframe src="{{ asset('storage/thesis/' . basename($thesis_data->thesis_file)) }}" class="w-full h-64 border border-gray-300" style="overflow: auto;" allowfullscreen></iframe>
+                        </div>
 
+                    </div>
+
+                    @endforeach
                 </div><!-- end row -->
             </div>
-        </div><!-- End Service -->
-
-        <!-- Portfolio Content -->
-        <div id="news" class="section relative z-0 py-12 md:py-16 bg-white">
-            <div class="container xl:max-w-6xl mx-auto px-4">
-                <!-- Heading start -->
-                <header class="text-center mx-auto mb-12 lg:px-20">
-                    <h2 class="text-2xl leading-normal mb-2 font-bold text-black">About</h2>
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 60" style="margin: 0 auto;height: 35px;" xml:space="preserve">
-                        <circle cx="50.1" cy="30.4" r="5" class="stroke-primary" style="fill: transparent;stroke-width: 2;stroke-miterlimit: 10;"></circle>
-                        <line x1="55.1" y1="30.4" x2="100" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
-                        <line x1="45.1" y1="30.4" x2="0" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
-                    </svg>
-                    <p class="text-gray-500 leading-relaxed font-light text-xl mx-auto pb-2">Our platform offers secure, efficient archiving with innovative AI-driven plagiarism detection and powerful content-based search.</p>
-                </header><!-- End heading -->
-            </div>
-
-            <div class="flex flex-wrap flex-row">
-
-            </div>
-
         </div>
+        s
+
+
 
         <div id="events" class="section relative z-0 py-12 md:py-16 bg-white">
             <div class="container xl:max-w-6xl mx-auto px-4">
