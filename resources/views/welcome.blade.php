@@ -28,6 +28,7 @@ License: You must have a valid license from official store to legally use the th
     <!-- google font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&amp;display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 
     <!-- Favicon  -->
@@ -218,37 +219,119 @@ License: You must have a valid license from official store to legally use the th
             </div>
         </div><!-- end Hero -->
 
-        <!-- start services -->
-        <div id="thesis" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 bg-white">
+        <!-- start thesis section -->
+        <div id="thesis" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 bg-gray-100">
             <div class="container xl:max-w-6xl mx-auto px-4">
                 <header class="text-center mx-auto mb-12 lg:px-20">
-                    <h2 class="text-2xl leading-normal mb-2 font-bold text-black">Thesis</h2>
+                    <h2 class="text-3xl leading-normal mb-2 font-bold text-black">Thesis</h2>
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 60" style="margin: 0 auto;height: 35px;" xml:space="preserve">
                         <circle cx="50.1" cy="30.4" r="5" class="stroke-primary" style="fill: transparent;stroke-width: 2;stroke-miterlimit: 10;"></circle>
                         <line x1="55.1" y1="30.4" x2="100" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
                         <line x1="45.1" y1="30.4" x2="0" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
                     </svg>
-                    <p class="text-gray-500 leading-relaxed font-light text-xl mx-auto pb-2">Emphasizes the role of your system in preserving academic work.</p>
+                    <p class="text-gray-700 leading-relaxed font-light text-xl mx-auto pb-2">Explore academic works preserving knowledge and innovation.</p>
                 </header><!-- End heading -->
 
                 <!-- row -->
-                <div class="flex flex-wrap flex-row -mx-4 text-center">
+                <div class="flex flex-wrap flex-row -mx-4">
                     @foreach ($thesis as $thesis_data)
                     @if ($thesis_data->status !== 'pending' && $thesis_data->status !== 'declined')
                     <div class="w-full md:w-1/3 px-4 mb-8">
-                        <div class="bg-white shadow-md rounded-lg p-6 flex flex-col h-full">
+                        <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col h-full relative group transition-shadow duration-300 hover:shadow-xl">
                             <div class="flex-grow">
                                 <h3 class="text-lg font-bold text-black mb-2">{{ $thesis_data->thesis_title }}</h3>
                                 <p class="text-gray-600 mb-4">Abstract: {{ $thesis_data->abstract }}</p>
                             </div>
-                            <iframe src="{{ asset('storage/thesis/' . basename($thesis_data->thesis_file)) }}" class="w-full h-64 border border-gray-300" style="overflow: auto;" allowfullscreen></iframe>
+                            <div class="relative">
+                                <iframe src="{{ asset('storage/thesis/' . basename($thesis_data->thesis_file)) }}" class="w-full h-64 border border-gray-300 rounded-lg" style="overflow: auto;" allowfullscreen></iframe>
+                                <div class="absolute inset-0 bg-gray-800 bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300 rounded-lg">
+                                    <button class="bg-blue-600 text-white rounded px-3 py-2 text-sm font-semibold hover:bg-blue-800 transition duration-200" onclick="showRegisterAlert()">
+                                        <i class="fas fa-eye mr-1"></i> Read More
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endif
                     @endforeach
-                </div><!-- end row -->
+                </div>
             </div>
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function showRegisterAlert() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Register First',
+                    text: 'Please register to access the full thesis.',
+                    confirmButtonText: '<i class="fas fa-check"></i> Okay', // Add an icon to the button
+                    customClass: {
+                        confirmButton: 'btn-custom', // Custom class for the confirm button
+                        title: 'swal-title', // Custom class for title
+                        content: 'swal-content' // Custom class for content text
+                    },
+                    buttonsStyling: false, // Prevent default button styling
+                    showCloseButton: true, // Show close button
+                    focusConfirm: false, // Focus on the confirmation button
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the registration page
+                        window.location.href = '/register'; // Update this with your actual registration route
+                    }
+                });
+            }
+        </script>
+        <style>
+            .swal2-confirm.btn-custom {
+                background-color: blue;
+                /* Button background color */
+                color: white;
+                /* Button text color */
+                border: 1px solid gray;
+                /* Border color */
+                transition: background-color 0.3s;
+                /* Smooth transition for background color */
+            }
+
+            .swal2-confirm.btn-custom:hover {
+                background-color: transparent;
+                /* Button background color on hover */
+                color: black;
+                /* Change text color on hover */
+            }
+
+            .btn-custom {
+                background-color: #007bff;
+                /* Blue background */
+                color: white;
+                /* White text */
+                padding: 10px 20px;
+                /* Adjust padding for a larger button */
+                border: none;
+                /* Remove border */
+                border-radius: 5px;
+                /* Rounded corners */
+                font-size: 16px;
+                /* Larger font size */
+            }
+
+            .swal-title {
+                font-size: 24px;
+                /* Larger title font */
+                font-weight: bold;
+                /* Bold title */
+            }
+
+            .swal-content {
+                font-size: 16px;
+                /* Content text size */
+                color: #333;
+                /* Darker text for contrast */
+            }
+        </style>
+
+
 
 
 
