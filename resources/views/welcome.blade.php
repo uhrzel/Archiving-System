@@ -194,7 +194,7 @@ License: You must have a valid license from official store to legally use the th
 
                                 <p class="text-gray-500 leading-relaxed font-light text-xl mx-auto pb-2"> A Secured Online Thesis Achiving System with AI Plagiarism Checker using Indexing Algorithm with Content-Based Searching.</p>
                             </div>
-                            <a class="py-2.5 px-10 inline-block text-center leading-normal text-gray-900 bg-white border-b border-gray-100 hover:text-black hover:ring-0 focus:outline-none focus:ring-0 mr-4" href="#advertisement">
+                            <a class="py-2.5 px-10 inline-block text-center leading-normal text-gray-900 bg-white border-b border-gray-100 hover:text-black hover:ring-0 focus:outline-none focus:ring-0 mr-4" href="#thesis">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="inline-block mr-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 512 512">
                                     <path d="M304,384V360c0-29,31.54-56.43,52-76,28.84-27.57,44-64.61,44-108,0-80-63.73-144-144-144A143.6,143.6,0,0,0,112,176c0,41.84,15.81,81.39,44,108,20.35,19.21,52,46.7,52,76v24" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px" />
                                     <line x1="224" y1="480" x2="288" y2="480" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px" />
@@ -221,7 +221,6 @@ License: You must have a valid license from official store to legally use the th
         <!-- start services -->
         <div id="thesis" class="section relative pt-20 pb-8 md:pt-16 md:pb-0 bg-white">
             <div class="container xl:max-w-6xl mx-auto px-4">
-                <!-- Heading start -->
                 <header class="text-center mx-auto mb-12 lg:px-20">
                     <h2 class="text-2xl leading-normal mb-2 font-bold text-black">Thesis</h2>
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 60" style="margin: 0 auto;height: 35px;" xml:space="preserve">
@@ -235,6 +234,7 @@ License: You must have a valid license from official store to legally use the th
                 <!-- row -->
                 <div class="flex flex-wrap flex-row -mx-4 text-center">
                     @foreach ($thesis as $thesis_data)
+                    @if ($thesis_data->status !== 'pending' && $thesis_data->status !== 'declined')
                     <div class="w-full md:w-1/3 px-4 mb-8">
                         <div class="bg-white shadow-md rounded-lg p-6 flex flex-col h-full">
                             <div class="flex-grow">
@@ -243,14 +243,12 @@ License: You must have a valid license from official store to legally use the th
                             </div>
                             <iframe src="{{ asset('storage/thesis/' . basename($thesis_data->thesis_file)) }}" class="w-full h-64 border border-gray-300" style="overflow: auto;" allowfullscreen></iframe>
                         </div>
-
                     </div>
-
+                    @endif
                     @endforeach
                 </div><!-- end row -->
             </div>
         </div>
-        s
 
 
 
@@ -312,10 +310,10 @@ License: You must have a valid license from official store to legally use the th
                         <div class="relative overflow-hidden bg-white dark:bg-gray-800 mb-12 hover-grayscale-0 wow fadeInUp" data-wow-duration="1s">
                             <!-- team block -->
                             <div class="relative overflow-hidden px-6">
-                                <img src="src/img/dummy/aliah.png" class="max-w-full h-auto mx-auto rounded-full bg-gray-50 grayscale" alt="title image">
+                                <img src="src/img/dummy/aliah.png" class="max-w-full h-15 mx-auto rounded-full bg-gray-50 grayscale" alt="title image">
                             </div>
                             <div class="pt-6 text-center">
-                                <p class="text-lg leading-normal font-bold mb-1">Aliah Len Tobongbanua</p>
+                                <p class="text-lg leading-normal font-bold">Aliah Tobongbanua</p>
                                 <p class="text-gray-500 leading-relaxed font-light">Hipster</p>
                                 <!-- social icon -->
                                 <div class="mt-2 mb-5 space-x-2">
@@ -357,7 +355,7 @@ License: You must have a valid license from official store to legally use the th
                                 <img src="src/img/dummy/Norhadin.png" class="max-w-full h-auto mx-auto rounded-full bg-gray-50 grayscale" alt="title image">
                             </div>
                             <div class="pt-6 text-center">
-                                <p class="text-lg leading-normal font-bold mb-1">Norhadin Abdul Ampatuan</p>
+                                <p class="text-lg leading-normal font-bold mb-1">Norhadin Ampatuan</p>
                                 <p class="text-gray-500 leading-relaxed font-light">Hacker</p>
                                 <!-- social icon -->
                                 <div class="mt-2 mb-5 space-x-2">

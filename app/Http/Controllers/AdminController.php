@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\admin;
+use App\Models\Thesis;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -35,10 +36,13 @@ class AdminController extends Controller
      */
     public function pending(Request $request)
     {
+        // Fetch all theses with a status of 'pending'
+        $thesis = Thesis::where('status', 'pending')->get();
 
-
-        return view('admin.pending.index');
+        // Pass the fetched theses to the view
+        return view('admin.pending.index', compact('thesis'));
     }
+
     public function index(Request $request)
     {
         //

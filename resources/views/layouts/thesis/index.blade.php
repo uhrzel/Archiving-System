@@ -105,6 +105,7 @@
                             <th>#</th>
                             <th>Thesis Title</th>
                             <th>Thesis Course</th>
+                            <th>Thesis Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -114,6 +115,17 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $thesis_data->thesis_title }}</td>
                             <td>{{ ucfirst($thesis_data->thesis_course) }}</td>
+                            <td>
+                                <span class="
+        @if($thesis_data->status == 'pending') bg-warning
+        @elseif($thesis_data->status == 'declined') bg-danger
+        @elseif($thesis_data->status == 'published') bg-success
+        @endif
+        text-white px-2 py-1 rounded">
+                                    {{ ucfirst($thesis_data->status) }}
+                                </span>
+                            </td>
+
                             <td>
                                 <div style="display: flex; gap: 10px;">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editThesisModal{{$thesis_data->id}}" style="width: 120px;">

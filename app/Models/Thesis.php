@@ -16,5 +16,11 @@ class Thesis extends Model
         'thesis_file',
         'thesis_course',
         'abstract',
+        'user_id',
     ];
+    // Thesis.php
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

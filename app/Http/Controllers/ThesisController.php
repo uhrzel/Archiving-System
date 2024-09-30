@@ -16,13 +16,16 @@ class ThesisController extends Controller
      */
     public function index()
     {
+        $thesis = Thesis::where('user_id', auth()->id())
+            ->get();
 
-        $thesis = Thesis::all();
-        $courses = Course::all();
+        // Fetch only active courses
+        $courses = Course::where('course_status', 'active')->get();
 
         // Pass the data to the view
         return view('layouts.thesis.index', compact('thesis', 'courses'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -47,17 +50,35 @@ class ThesisController extends Controller
             'abstract' => 'required|string',
         ]);
 
+
         // Store the thesis file
         if ($request->hasFile('thesis_file')) {
             // Store the file in the 'thesis' folder under 'public/storage'
             $validated['thesis_file'] = $request->file('thesis_file')->store('public/thesis');
         }
 
+        $validated['user_id'] = auth()->id();
+
         // Create a new thesis record in the database
         Thesis::create($validated);
 
         return redirect()->route('thesis.index')->with('success', 'Thesis created successfully.');
     }
+
+    public function updateStatus(Request $request)
+    {
+        $thesis = Thesis::find($request->thesis_id);
+
+        if ($thesis) {
+            $thesis->status = $request->status;
+            $thesis->save();
+
+            return response()->json(['success' => true, 'status' => $thesis->status]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Thesis not found']);
+    }
+
 
     /**
      * Display the specified resource.

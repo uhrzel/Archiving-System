@@ -37,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/thesis/{id}', [App\Http\Controllers\ThesisController::class, 'update'])->name('thesis.update');
     Route::delete('/thesis/{thesis}', [App\Http\Controllers\ThesisController::class, 'destroy'])->name('thesis.destroy');
 
+    Route::post('/thesis/update-status', [App\Http\Controllers\ThesisController::class, 'updateStatus'])->name('thesis.updateStatus');
+
 
     Route::get('/students', [App\Http\Controllers\AdminController::class, 'index'])->name('students.index')->middleware('admin');
     Route::get('/students/edit/{id}', [App\Http\Controllers\AdminController::class, 'edit'])->name('students.edit')->middleware('admin');
