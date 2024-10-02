@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\admin;
 use App\Models\Thesis;
 use Illuminate\Http\Request;
+use App\Mail\StatusUpdated;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -77,10 +79,20 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(admin $admin)
+    public function show($id)
     {
-        //
+        $student = Admin::findOrFail($id);
+
+        return response()->json([
+            'student_id' => $student->student_id,
+            'name' => $student->name,
+            'email' => $student->email,
+            'role' => $student->role,
+            'status' => $student->status,
+            'coe_file_path' => asset('storage/coe_files/' . basename($student->coe_file)),
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -95,24 +107,37 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, $id)
     {
-        // Validate the input
+        // Validate the input, making coe_file optional for updates
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'status' => 'required|string|in:pending,approved,banned'
         ]);
 
         // Find the admin by ID
         $admin = admin::find($id);
 
-        // Update only name and email, leave the role as is
+        // Update the name, email, and status
         $admin->name = $request->name;
         $admin->email = $request->email;
+        $admin->status = $request->status; // Update status
+
+
+        // Save the changes
         $admin->save();
 
+        // Send email notification if status is approved or banned
+        if ($admin->wasChanged('status')) { // Check if status has changed
+            if ($request->status === 'approved' || $request->status === 'banned') {
+                Mail::to($admin->email)->send(new StatusUpdated($admin, $request->status));
+            }
+        }
+
         // Redirect back with a success message
-        return redirect()->route('students.index')->with('success', 'Students data updated successfully!');
+        return redirect()->route('students.index')->with('success', 'Student data updated successfully!');
     }
 
     /**

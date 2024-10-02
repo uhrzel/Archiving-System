@@ -15,13 +15,28 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        $request->validate([
+            'email' => 'required|email|max:255',
+            'name' => 'required|string|max:255',
+            'avatar' => 'nullable|file|mimes:jpeg,png,jpg|max:2048', // Validate avatar
+        ]);
+
+        $user = auth()->user();
+        $user->email = $request->email;
+        $user->name = $request->name;
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Store new avatar
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath; // Save the new file path
+        }
+
         $user->save();
 
-        return redirect()->route('profile.edit')->with('status', 'Profil Berhasil Di Update!');
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
     }
+
 
     public function changepassword()
     {

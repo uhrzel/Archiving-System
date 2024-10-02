@@ -23,6 +23,7 @@ class User extends Authenticatable
         'student_id',
         'course_id',
         'coe_file',
+        'avatar',
     ];
 
     /**

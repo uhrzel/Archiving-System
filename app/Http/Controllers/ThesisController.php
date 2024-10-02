@@ -83,10 +83,18 @@ class ThesisController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $thesis = Thesis::with('user')->findOrFail($id);
+        return response()->json([
+            'thesis_title' => $thesis->thesis_title,
+            'user' => $thesis->user,
+            'thesis_course' => $thesis->thesis_course,
+            'status' => $thesis->status,
+            'thesis_file_path' => asset('storage/thesis/' . basename($thesis->thesis_file)), // Adjust as needed
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -10,7 +10,11 @@
     <ul class="navbar-nav ml-auto">
         <li class="dropdown">
             <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+                @if(auth()->user()->avatar)
+                <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar" class="rounded-circle mr-1">
+                @else
                 <img alt="image" src="{{ asset('img/avatar/avatar-1.png') }}" class="rounded-circle mr-1">
+                @endif
                 <div class="d-sm-none d-lg-inline-block">
                     Hi, {{ substr(auth()->user()->name, 0, 10) }}
                 </div>

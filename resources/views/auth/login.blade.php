@@ -9,6 +9,17 @@
         {{ session('success') }}
     </div>
     @endif
+    @if (session('pending'))
+    <div class="alert" style="background-color: yellow; color: black;">
+        {{ session('pending') }}
+    </div>
+    @endif
+    @if (session('banned'))
+    <div class="alert" style="background-color: red; color: white;">
+        {{ session('banned') }}
+    </div>
+    @endif
+
 
     <div class="row justify-content-center">
         <div class="col-md-8">

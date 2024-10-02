@@ -3,7 +3,36 @@
 @section('title', 'Pending Page')
 
 @section('content')
+<style>
+    .dropdown-menu {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
 
+    .dropdown-item {
+        color: #212529;
+    }
+
+    .dropdown-item:hover {
+        background-color: #e9ecef;
+        color: #ffffff;
+    }
+
+    .published:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .declined:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .view:hover {
+        background-color: blue;
+        color: white;
+    }
+</style>
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -19,7 +48,6 @@
                             <th>Thesis Title</th>
                             <th>Thesis Course</th>
                             <th>Thesis Status</th>
-
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -27,28 +55,36 @@
                         @foreach ($thesis as $thesis_data)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            </td>
-                            <td>{{ $thesis_data->user->name ?? 'Unknown' }}</td> <!-- Display author's name -->
+                            <td>{{ $thesis_data->user->name ?? 'Unknown' }}</td>
                             <td>{{ $thesis_data->thesis_title }}</td>
                             <td>{{ ucfirst($thesis_data->thesis_course) }}</td>
                             <td>
                                 <span class="
-        @if($thesis_data->status == 'pending') bg-warning
-        @elseif($thesis_data->status == 'declined') bg-danger
-        @elseif($thesis_data->status == 'published') bg-success
-        @endif
-        text-white px-2 py-1 rounded">
+                                    @if($thesis_data->status == 'pending') bg-warning
+                                    @elseif($thesis_data->status == 'declined') bg-danger
+                                    @elseif($thesis_data->status == 'published') bg-success
+                                    @endif
+                                    text-white px-2 py-1 rounded">
                                     {{ ucfirst($thesis_data->status) }}
                                 </span>
-
-
+                            </td>
                             <td>
-                                <button type="button" class="btn btn-primary me-2" style="width: 90px;" onclick="updateStatus({{ $thesis_data->id }}, 'Published')">
-                                    Published
-                                </button>
-                                <button type="button" class="btn btn-danger" style="width: 90px;" onclick="updateStatus({{ $thesis_data->id }}, 'Declined')">
-                                    Declined
-                                </button>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ $thesis_data->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $thesis_data->id }}">
+                                        <li>
+                                            <a class="dropdown-item view" href="#" onclick="showModal({{ $thesis_data->id }})">View</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item published" href="#" onclick="updateStatus({{ $thesis_data->id }}, 'Published')">Published</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item declined" href="#" onclick="updateStatus({{ $thesis_data->id }}, 'Declined')">Declined</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -59,13 +95,32 @@
     </section>
 </div>
 
-@endsection
+<!-- Modal -->
+<div class="modal fade" id="thesisModal" tabindex="-1" aria-labelledby="thesisModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="thesisModalLabel">Thesis Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="thesisDetailsContent">
+                    <!-- Thesis details will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-@push('scripts')
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Include SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     function updateStatus(thesisId, status) {
-        // Show confirmation dialog
         Swal.fire({
             title: 'Are you sure?',
             text: `Do you want to mark this thesis as ${status}?`,
@@ -85,14 +140,12 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Show success message
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Status Updated!',
                                 text: `The thesis status has been changed to ${response.status}`,
                                 confirmButtonText: 'Okay'
                             }).then(() => {
-                                // Refresh the page after confirmation
                                 location.reload();
                             });
                         }
@@ -110,8 +163,59 @@
             }
         });
     }
+
+    function showModal(thesisId) {
+        $.ajax({
+            url: '/thesis/' + thesisId, // Update this URL to match your route
+            method: 'GET',
+            success: function(data) {
+                // Determine the status class based on the thesis status
+                let statusClass = '';
+                switch (data.status) {
+                    case 'pending':
+                        statusClass = 'text-bg-warning'; // Yellow background for pending
+                        break;
+                    case 'published':
+                        statusClass = 'text-bg-success'; // Green background for published
+                        break;
+                    case 'declined':
+                        statusClass = 'text-bg-danger'; // Red background for declined
+                        break;
+                    default:
+                        statusClass = 'text-bg-secondary'; // Default gray background for other statuses
+                }
+
+                $('#thesisDetailsContent').html(`
+                <div class="mb-3">
+                    <h6 class="font-weight-bold">Title:</h6>
+                    <p>${data.thesis_title}</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="font-weight-bold">Authors:</h6>
+                    <p>${data.user.name || 'Unknown'}</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="font-weight-bold">Course:</h6>
+                    <p>${data.thesis_course}</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="font-weight-bold">Status:</h6>
+                <span class="${statusClass} px-2 py-1 rounded"> ${data.status}</span>
+                </div>
+                <div class="mb-3">
+                    <h6 class="font-weight-bold">Thesis File:</h6>
+                    <iframe src="${data.thesis_file_path}" class="w-full h-64 border border-gray-300 rounded-lg" style="overflow: auto;" allowfullscreen></iframe>
+                </div>
+                <div class="mb-3">
+                    <a href="${data.thesis_file_path}" target="_blank" class="btn btn-danger">View PDF</a>
+                </div>
+            `);
+                $('#thesisModal').modal('show'); // Show the modal
+            },
+            error: function() {
+                alert('Error fetching thesis details.');
+            }
+        });
+    }
 </script>
-
-
-
-@endpush
+@endsection
