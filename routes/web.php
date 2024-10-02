@@ -6,6 +6,7 @@ use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Thesis; // Import the Thesis model
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController; // Import the LoginController
 
 Route::get('/', function () {
     $thesis = Thesis::all(); // Fetch all thesis records from the database
