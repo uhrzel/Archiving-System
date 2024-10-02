@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('user');
+            $table->enum('status', ['pending', 'approved', 'banned'])->default('pending');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -29,6 +30,7 @@ return new class extends Migration
             'email' => 'admin@gmail.com',
             'password' => Hash::make('12345678'),
             'role' => 'admin',
+            'status' => 'approved',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

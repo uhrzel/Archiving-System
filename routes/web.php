@@ -5,11 +5,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Thesis; // Import the Thesis model
+use App\Http\Controllers\Auth\RegisterController;
 
 Route::get('/', function () {
     $thesis = Thesis::all(); // Fetch all thesis records from the database
     return view('welcome', compact('thesis')); // Pass the thesis data to the view
 });
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {

@@ -5,12 +5,13 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-            <div class="card-header text-center d-flex justify-content-center">
-            <div class="card-header">{{ __('Register') }}</div>
+                <div class="card-header text-center d-flex justify-content-center">
+                    <div class="card-header">{{ __('Register') }}</div>
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
+
                         @csrf
 
                         <div class="row mb-3">
@@ -20,9 +21,9 @@
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                                 @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -34,9 +35,55 @@
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
 
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="course" class="col-md-4 col-form-label text-md-end">{{ __('Course') }}</label>
+
+                            <div class="col-md-6">
+                                <select id="course" class="form-select @error('course') is-invalid @enderror" name="course" required>
+                                    <option value="" disabled selected>Select your course</option>
+                                    @foreach($courses as $course)
+                                    <option value="{{ $course->id }}">{{ $course->course_name }}</option>
+                                    @endforeach
+                                </select>
+
+                                @error('course')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="coe_file" class="col-md-4 col-form-label text-md-end">{{ __('COE File') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="coe_file" type="file" class="form-control @error('coe_file') is-invalid @enderror" name="coe_file" required>
+
+                                @error('coe_file')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="student_id" class="col-md-4 col-form-label text-md-end">{{ __('Student ID') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="student_id" type="text" class="form-control @error('student_id') is-invalid @enderror" name="student_id" required>
+
+                                @error('student_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -48,13 +95,12 @@
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
-
                         <div class="row mb-3">
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
 

@@ -20,6 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'student_id',
+        'course_id',
+        'coe_file',
     ];
 
     /**
