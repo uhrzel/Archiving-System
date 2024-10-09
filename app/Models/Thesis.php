@@ -12,6 +12,7 @@ class Thesis extends Model
 
 
     protected $fillable = [
+        'plagiarized',
         'thesis_title',
         'thesis_file',
         'thesis_course',

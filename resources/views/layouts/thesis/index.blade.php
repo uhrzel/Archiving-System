@@ -73,31 +73,6 @@
                     </div>
                 </div>
             </div>
-
-            @if(session('success'))
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: "{{ session('success') }}",
-                        confirmButtonText: 'Okay'
-                    });
-                });
-            </script>
-            @endif
-            @if($errors->any())
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: "{{ $errors->first() }}",
-                        confirmButtonText: 'Okay'
-                    });
-                });
-            </script>
-            @endif
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
@@ -195,11 +170,97 @@
         </div>
     </section>
 </div>
+<style>
+    .swal2-html {
+        color: white;
+        /* White text color for contrast */
+        padding: 15px;
+        /* Padding for better spacing */
+        border-radius: 5px;
+        /* Rounded corners */
+    }
+
+    .swal-red {
+        background-color: #dc3545;
+        /* Red background color */
+    }
+
+    .swal-green {
+        background-color: #28a745;
+        /* Green background color */
+    }
+</style>
 
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('success'))
+<script>
+    const insightsText = `{{ session('insightsText', 'No AI-generated content detected.') }}`;
+    let backgroundClass;
+    let iconType;
+    console.log(insightsText);
+
+
+    if (insightsText === "AI-generated content detected") {
+        backgroundClass = 'swal-red';
+        iconType = 'success';
+    } else if (insightsText === "No AI-generated content detected.") {
+        backgroundClass = 'swal-green'; // Set to green background
+        iconType = 'success';
+    } else {
+        // Fallback case
+        backgroundClass = 'swal-green'; // Default to green
+        iconType = 'info';
+    }
+
+    Swal.fire({
+        title: 'Thesis Uploaded Successfully',
+        html: `<span class="swal2-html ${backgroundClass}">${insightsText}</span>`,
+        icon: iconType,
+        confirmButtonText: 'OK',
+        background: '#f8f9fa'
+    });
+</script>
+@endif
+
+
+@if($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "{{ $errors->first() }}",
+            confirmButtonText: 'Okay'
+        });
+    });
+</script>
+@endif
+
+
+@if(session('delete_success'))
+<script>
+    Swal.fire({
+        title: 'Thesis Deleted Successfully',
+        icon: 'success',
+        confirmButtonText: 'OK',
+    });
+</script>
+@endif
+
+@if(session('delete_error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "{{ session('delete_error') }}",
+        confirmButtonText: 'Okay'
+    });
+</script>
+@endif
 <script>
     function confirmDelete(button) {
         const form = button.closest('.delete-thesis-form'); // Get the form element
@@ -213,7 +274,7 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                form.submit(); // Submit the form if confirmed
+                form.submit();
             }
         });
     }

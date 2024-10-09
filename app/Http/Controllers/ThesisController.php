@@ -8,6 +8,11 @@ use App\Models\Thesis;
 use App\Models\Course;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Smalot\PdfParser\Parser;
+use GuzzleHttp\Client;
+
+
+
 
 class ThesisController extends Controller
 {
@@ -40,6 +45,16 @@ class ThesisController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+
+
+    /**
+     * Update the status for plagiarism
+     * 
+     * 
+     */
+
+
     public function store(Request $request)
     {
         // Validate the request data
@@ -48,22 +63,127 @@ class ThesisController extends Controller
             'thesis_file' => 'required|file|mimes:pdf',
             'thesis_course' => 'required|string|max:255',
             'abstract' => 'required|string',
-        ]);
 
+        ]);
 
         // Store the thesis file
         if ($request->hasFile('thesis_file')) {
-            // Store the file in the 'thesis' folder under 'public/storage'
             $validated['thesis_file'] = $request->file('thesis_file')->store('public/thesis');
         }
 
         $validated['user_id'] = auth()->id();
 
-        // Create a new thesis record in the database
-        Thesis::create($validated);
 
-        return redirect()->route('thesis.index')->with('success', 'Thesis created successfully.');
+        $thesis = Thesis::create($validated);
+
+        $aiResponse = $this->checkAiContentFromPdf(storage_path('app/' . $validated['thesis_file']), $thesis->id);
+
+
+        Log::info('Raw AI content check response for thesis ID ' . $thesis->id, ['response' => $aiResponse]);
+
+
+        $aiResponse = json_decode($aiResponse, true);
+
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error('JSON decoding error for AI content check response', [
+                'error' => json_last_error_msg(),
+                'response' => $aiResponse,
+            ]);
+            return redirect()->route('thesis.index')->with('error', 'Failed to check AI-generated content.');
+        }
+
+
+        $aiCheckStatus = '';
+        $insightsText = '';
+        if (isset($aiResponse['data'])) {
+
+            if (isset($aiResponse['data']['isAi'])) {
+                $isAi = $aiResponse['data']['isAi'];
+
+                if ($isAi) {
+                    $insights = array_map(function ($insight) {
+                        return $insight['insight'];
+                    }, $aiResponse['data']['nlp']);
+
+
+                    $insightsText = "AI-generated content detected";
+
+                    /*   $aiCheckStatus = "AI-generated content detected."; */
+                } else {
+
+                    $insightsText = "No AI-generated content detected.";
+                }
+            } else {
+                // Handle case where isAi is not set
+                $aiCheckStatus = "AI check result is not available.";
+            }
+        } else {
+            // Handle unexpected response format
+            $aiCheckStatus = "Unable to check AI-generated content.";
+        }
+
+
+        if (isset($aiResponse['data']['isAi'])) {
+            $isAi = $aiResponse['data']['isAi'];
+            $thesis->update(['plagiarized' => $isAi ? 1 : 0]);
+            Log::info(
+                'Plagiarized status updated',
+                ['thesis_id' => $thesis->id, 'plagiarized' => $isAi ? 1 : 0]
+            );
+        } else {
+            Log::warning('AI check result not set for thesis ID ' . $thesis->id);
+        }
+
+
+        return redirect()->route('thesis.index')->with([
+            'success' => 'Thesis created successfully.',
+            'aiCheckStatus' => $aiCheckStatus,
+            'insightsText' => $insightsText, // Include insights for SweetAlert
+        ]);
     }
+
+
+
+    private function checkAiContentFromPdf($filePath, $thesisId)
+    {
+        $client = new \GuzzleHttp\Client();
+
+        // Use the PDF Parser to extract text from the file
+        $parser = new Parser();
+        $pdf = $parser->parseFile($filePath);
+        $text = $pdf->getText();
+
+        // Check if the extracted text length meets the API requirements
+        if (strlen($text) < 50 || strlen($text) > 10000) {
+            Log::info('AI content check skipped for thesis ID ' . $thesisId . ': Extracted text length is not within the required range.');
+            return json_encode(['data' => ['isAi' => false, 'nlp' => []]]);
+        }
+
+        try {
+            $response = $client->request('POST', 'https://chatgpt-detector-api.p.rapidapi.com/aiContentCheck', [
+                'body' => json_encode(['text' => $text]),
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'x-rapidapi-host' => 'chatgpt-detector-api.p.rapidapi.com',
+                    'x-rapidapi-key' => env('RAPID_API_GPT'),
+                ],
+            ]);
+
+
+            $apiResponse = json_decode($response->getBody(), true);
+            Log::info('AI Content check response for thesis ID ' . $thesisId, $apiResponse);
+
+
+            return json_encode($apiResponse);
+        } catch (\Exception $e) {
+            Log::error('Error during AI content check: ' . $e->getMessage());
+
+            return json_encode(['data' => ['isAi' => false, 'nlp' => []]]);
+        }
+    }
+
+
 
     public function updateStatus(Request $request)
     {
@@ -158,10 +278,10 @@ class ThesisController extends Controller
         try {
             Log::info('Deleting Thesis ID: ' . $thesis->id);
             $thesis->delete();
-            return redirect()->route('thesis.index')->with('success', 'Thesis deleted successfully!');
+            return redirect()->route('thesis.index')->with('delete_success', 'Thesis deleted successfully!');
         } catch (\Exception $e) {
             Log::error('Error deleting thesis: ' . $e->getMessage());
-            return redirect()->route('thesis.index')->with('error', 'Failed to delete thesis.');
+            return redirect()->route('thesis.index')->with('delete_error', 'Failed to delete thesis.');
         }
     }
 }
