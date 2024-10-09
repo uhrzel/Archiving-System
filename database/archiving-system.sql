@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:8111
--- Generation Time: Oct 04, 2024 at 07:57 AM
+-- Generation Time: Oct 09, 2024 at 04:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,14 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('johndoe@gmail.com|127.0.0.1', 'i:1;', 1728485236),
+('johndoe@gmail.com|127.0.0.1:timer', 'i:1728485236;', 1728485236);
 
 -- --------------------------------------------------------
 
@@ -113,7 +121,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (7, '2024_09_30_065556_add_foreignkey_to_thesis_table', 1),
 (8, '2024_10_02_082219_add_columns_to_users_table', 1),
 (9, '2024_10_02_085340_add_course_id_to_users_table', 1),
-(10, '2024_10_02_112620_add_avatar_to_users_table', 2);
+(10, '2024_10_02_112620_add_avatar_to_users_table', 2),
+(11, '2024_10_09_135318_add_plagiarized_to_thesis_table', 3),
+(12, '2024_10_09_141456_add_plagiarized_to_thesis_table', 4),
+(13, '2024_10_09_143050_add_plagiarized_to_thesis_table', 5);
 
 -- --------------------------------------------------------
 
@@ -147,7 +158,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('a2jr7UZDKyE5aGCwsHPazgVQAvHGgb2CzpQW63GG', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiT2lXc0lTY3VxeWdaQXJma2o2RWtEbEtSYVF6bUh6UlJSdVFCdFd5dCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9zdHVkZW50cy9lZGl0LzE4Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjQ6ImF1dGgiO2E6MTp7czoyMToicGFzc3dvcmRfY29uZmlybWVkX2F0IjtpOjE3Mjc4NzUyMjc7fX0=', 1727875526);
+('SgSuMel10ZFxUwZR1F84lSBp8WPiJAH0f5FriV6S', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibk1uT1NUcjdWRzVFQVRSRVdmb0pENUd3WXFQbmhjOWVsY3pNekxpeSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fX0=', 1728485305);
 
 -- --------------------------------------------------------
 
@@ -158,6 +169,7 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 CREATE TABLE `thesis` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `plagiarized` tinyint(1) NOT NULL DEFAULT 0,
   `thesis_title` varchar(255) NOT NULL,
   `thesis_file` varchar(255) NOT NULL,
   `thesis_course` varchar(255) NOT NULL,
@@ -171,8 +183,11 @@ CREATE TABLE `thesis` (
 -- Dumping data for table `thesis`
 --
 
-INSERT INTO `thesis` (`id`, `user_id`, `thesis_title`, `thesis_file`, `thesis_course`, `abstract`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Progesterone Effects in the Nervous System', 'public/thesis/CnrCAvxPASEvmIomvsX2LN8Q9PINAWCyUEiruDF6.pdf', 'Introduction to Cybersecurity', 'The sex hormone progesterone is mainly known as a key factor in establishing and maintaining pregnancy. In addition, progesterone has been shown to induce morphological changes in the central and peripheral nervous system by increasing dendrito-, spino-, and synaptogenesis in Purkinje cells (Wessel et al.: Cell Mol Life Sci (2014a) 1723–1740) and increasing axonal outgrowth in dorsal root ganglia (Olbrich et al.: Endocrinology (2013) 3784–3795).', 'pending', '2024-10-02 03:52:33', '2024-10-02 04:21:07');
+INSERT INTO `thesis` (`id`, `user_id`, `plagiarized`, `thesis_title`, `thesis_file`, `thesis_course`, `abstract`, `status`, `created_at`, `updated_at`) VALUES
+(150, 22, 1, 'wqdweq', 'public/thesis/1eGgyJWEY5Z9ITYm5thmSU3uKXCgI0Uzz5ljbHXH.pdf', 'Web Development Essentials', 'weq', 'pending', '2024-10-09 06:39:36', '2024-10-09 06:39:40'),
+(151, 22, 0, 'dwqdw', 'public/thesis/K5wK5HmfI7OjDSIRiNfveS2bRu5aMnbMraamtaXA.pdf', 'Introduction to Cybersecurity', '321', 'pending', '2024-10-09 06:39:58', '2024-10-09 06:40:00'),
+(152, 2, 1, 'gemini copy', 'public/thesis/JHd8cl8vyqOlEuCH8RTntVu7KpVQLLoVFnugPEpy.pdf', 'Introduction to Cybersecurity', '21', 'pending', '2024-10-09 06:46:53', '2024-10-09 06:46:56'),
+(153, 2, 0, 'orig work', 'public/thesis/6CR0PvPpIaSJgnVwjteeKcSJNTeLSvT1Gtnf9YHR.pdf', 'Data Analysis and Visualization', '21', 'published', '2024-10-09 06:47:14', '2024-10-09 06:47:44');
 
 -- --------------------------------------------------------
 
@@ -291,13 +306,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `thesis`
 --
 ALTER TABLE `thesis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
 -- AUTO_INCREMENT for table `users`
