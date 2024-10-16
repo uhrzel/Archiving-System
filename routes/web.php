@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about');
     Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact');
     Route::get('/thesis', [App\Http\Controllers\HomeController::class, 'thesis'])->name('thesis');
+    Route::get('/home/search', [App\Http\Controllers\HomeController::class, 'index'])->name('thesis.search');
 
     Route::get('/admin/archive', [App\Http\Controllers\AdminController::class, 'archive'])->name('admin.archive')->middleware('admin');
     Route::get('/admin/courses', [App\Http\Controllers\AdminController::class, 'courses'])->name('admin.courses')->middleware('admin');

@@ -47,7 +47,7 @@
                                     <textarea class="form-control" id="thesis_title" name="thesis_title" required></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="thesis_file">Thesis File</label>
+                                    <label for="thesis_file">Thesis File (PDF File Only)</label>
                                     <input type="file" class="form-control" id="thesis_file" name="thesis_file" required>
                                 </div>
                                 <div class="form-group">
@@ -320,10 +320,10 @@
     let backgroundClass, iconHtml;
     if (insightsText === "AI Content Detected") {
         backgroundClass = 'swal-red';
-        iconHtml = `<i class="fas fa-exclamation-triangle" style="color: orange;"></i> AI Content Detected.`;
+        iconHtml = `<i class="fas fa-exclamation-triangle" style="color: orange; margin-top: 22px;"></i> AI Content Detected.`;
     } else {
         backgroundClass = 'swal-green';
-        iconHtml = `<i class="fas fa-check-circle" style="color: green;"></i> No AI Content Detected.`;
+        iconHtml = `<i class="fas fa-check-circle" style="color: green; margin-top: 22px;"></i> No AI Content Detected.`;
     }
 
     let matchedTextHtml = '';
@@ -359,7 +359,10 @@
 
     Swal.fire({
         title: 'Thesis Uploaded Successfully',
-        html: sweetAlertContent,
+        html: `
+        <small style="font-size: 12px;">(Your file is being reviewed. You will be notified. Make sure the email used is correct/active.)</small>
+        ${sweetAlertContent}
+           `,
         icon: 'success',
         confirmButtonText: 'OK',
         background: '#f8f9fa'

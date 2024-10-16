@@ -142,7 +142,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Update Course</button>
+                                                <button type="submit" class="btn btn-primary">Update Changes</button>
                                             </div>
                                         </form>
                                     </div>

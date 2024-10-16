@@ -145,7 +145,7 @@
                 <span class="${statusClass} px-2 py-1 rounded"> ${data.status}</span>
                 </div>
                 <div class="mb-3">
-                    <h6 class="font-weight-bold">Ceo File:</h6>
+                    <h6 class="font-weight-bold">COE File:</h6>
               <img src="${data.coe_file_path}" style="width: 50%; height: 300px;" class="border border-gray-300 rounded-lg" />
           
                 </div>

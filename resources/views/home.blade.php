@@ -3,8 +3,7 @@
 @section('content')
 <div class="main-content">
     <div id="thesis" class="section pt-20 pb-8 md:pt-16 md:pb-0 bg-light">
-        <header class="text-center mb-4">
-
+        <header class="text-center">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 60" style="margin: 0 auto;height: 35px;" xml:space="preserve">
                 <circle cx="50.1" cy="30.4" r="5" class="stroke-primary" style="fill: transparent;stroke-width: 2;stroke-miterlimit: 10;"></circle>
                 <line x1="55.1" y1="30.4" x2="100" y2="30.4" class="stroke-primary" style="stroke-width: 2;stroke-miterlimit: 10;"></line>
@@ -12,8 +11,38 @@
             </svg>
             <p class="text-muted font-weight-light mx-auto pb-2">Explore academic works preserving knowledge and innovation.</p>
         </header>
+        <style>
+            .search-input {
+                width: 75%;
+                /* Adjust as necessary */
+            }
+
+            .search-button {
+                height: 38px;
+                /* Adjust as necessary */
+            }
+        </style>
+        <!-- Search Form -->
+        <div class="container mb-3">
+            <form action="{{ route('thesis.search') }}" method=" GET" class="form-inline">
+                <div class="input-group search-input">
+                    <input type="text" name="query" class="form-control" placeholder="Search Thesis..." aria-label="Search Thesis" required>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
         <div class="container">
             <div class="row">
+                @if($noResults)
+                <div class="col-12 text-center">
+                    <p class="text-danger">No results found for your search query.</p>
+                </div>
+                @else
                 @foreach ($thesis as $thesis_data)
                 @if ($thesis_data->status !== 'pending' && $thesis_data->status !== 'declined')
                 <div class="col-md-4 mb-4">
@@ -36,6 +65,7 @@
                 </div>
                 @endif
                 @endforeach
+                @endif
             </div>
         </div>
     </div>
