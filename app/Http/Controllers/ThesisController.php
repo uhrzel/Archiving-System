@@ -41,111 +41,215 @@ class ThesisController extends Controller
     } */
 
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
-
-
-
-    /**
-     * Update the status for plagiarism
-     * 
-     * 
-     */
-
-
-    public function store(Request $request)
+    /*    public function store(Request $request)
     {
-        // Validate the request data
+
         $validated = $request->validate([
             'thesis_title' => 'required|string|max:255',
             'thesis_file' => 'required|file|mimes:pdf',
             'thesis_course' => 'required|string|max:255',
             'abstract' => 'required|string',
-
         ]);
 
-        // Store the thesis file
-        if ($request->hasFile('thesis_file')) {
-            $validated['thesis_file'] = $request->file('thesis_file')->store('public/thesis');
-        }
+
+        $validated['thesis_file'] = $request->file('thesis_file')->store('public/thesis');
 
         $validated['user_id'] = auth()->id();
-
-
         $thesis = Thesis::create($validated);
 
-        $aiResponse = $this->checkAiContentFromPdf(storage_path('app/' . $validated['thesis_file']), $thesis->id);
 
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdfPath = storage_path('app/' . $validated['thesis_file']);
 
-        Log::info('Raw AI content check response for thesis ID ' . $thesis->id, ['response' => $aiResponse]);
-
-
-        $aiResponse = json_decode($aiResponse, true);
-
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::error('JSON decoding error for AI content check response', [
-                'error' => json_last_error_msg(),
-                'response' => $aiResponse,
-            ]);
-            return redirect()->route('thesis.index')->with('error', 'Failed to check AI-generated content.');
+        try {
+            $pdf = $parser->parseFile($pdfPath);
+            $text = $pdf->getText();
+        } catch (\Exception $e) {
+            Log::error('PDF parsing error for thesis ID ' . $thesis->id . ': ' . $e->getMessage());
+            return redirect()->route('thesis.index')->with('error', 'There was an error processing the PDF.');
         }
 
 
-        $aiCheckStatus = '';
+        $tempFilePath = storage_path('app/temp_thesis.txt');
+        file_put_contents($tempFilePath, $text);
+
+
+        $command = escapeshellcmd("python C:/Users/User/pycharmProjects/plagiarizedChecker/ai_detector.py " . escapeshellarg($tempFilePath));
+        $output = shell_exec($command . ' 2>&1');
+
+        unlink($tempFilePath);
+
+
+        if ($output === null || empty($output)) {
+            Log::error('Error executing Python script for thesis ID ' . $thesis->id . ': Output is null or empty.');
+            return redirect()->route('thesis.index')->with('error', 'There was an error processing your thesis.');
+        }
+
+
+        Log::info('Python script output for thesis ID ' . $thesis->id . ': ' . $output);
+
+        $similarityResult = json_decode($output, true);
+
+
+        Log::info('Similarity check result for thesis ID ' . $thesis->id, ['result' => $similarityResult]);
+
+
+        $matchingTexts = [];
         $insightsText = '';
-        if (isset($aiResponse['data'])) {
-
-            if (isset($aiResponse['data']['isAi'])) {
-                $isAi = $aiResponse['data']['isAi'];
-
-                if ($isAi) {
-                    $insights = array_map(function ($insight) {
-                        return $insight['insight'];
-                    }, $aiResponse['data']['nlp']);
+        $similarityDetails = '';
 
 
-                    $insightsText = "AI-generated content detected";
+        $isPlagiarized = !empty($similarityResult['matching_texts']) ? 1 : 0; // Set to 1 if AI content detected
 
-                    /*   $aiCheckStatus = "AI-generated content detected."; */
-                } else {
 
-                    $insightsText = "No AI-generated content detected.";
-                }
-            } else {
-                // Handle case where isAi is not set
-                $aiCheckStatus = "AI check result is not available.";
-            }
+        if ($isPlagiarized) {
+            $matchingTexts = $similarityResult['matching_texts'];
+            $insightsText = "AI Content Detected.";
+            $similarityScores = $similarityResult['similarities'] ?? [];
+            $similarityDetails = "Similarity Scores: " . implode(", ", $similarityScores);
         } else {
-            // Handle unexpected response format
-            $aiCheckStatus = "Unable to check AI-generated content.";
+            $insightsText = "No AI Content Detected.";
+            $similarityDetails = "No matching documents.";
         }
 
 
-        if (isset($aiResponse['data']['isAi'])) {
-            $isAi = $aiResponse['data']['isAi'];
-            $thesis->update(['plagiarized' => $isAi ? 1 : 0]);
-            Log::info(
-                'Plagiarized status updated',
-                ['thesis_id' => $thesis->id, 'plagiarized' => $isAi ? 1 : 0]
-            );
+        $thesis->update([
+            'similarity' => json_encode($similarityResult),
+            'plagiarized' => $isPlagiarized
+        ]);
+
+        $thesisFilePath = asset('storage/thesis/' . basename($validated['thesis_file']));
+
+        session()->flash('matchingTexts', $matchingTexts);
+
+
+        $csvFilePath = 'C:/Users/User/pycharmProjects/plagiarizedChecker/thesis-folder-csv/thesis_data.csv';
+        $fileHandle = fopen($csvFilePath, 'a');
+
+        if ($fileHandle !== false) {
+            if (filesize($csvFilePath) === 0) {
+                fputcsv($fileHandle, ['Thesis Title', 'User ID', 'Course', 'Abstract', 'Similarity', 'Plagiarized']);
+            }
+
+            $similarityData = json_encode($similarityResult);
+            $csvData = [
+                $validated['thesis_title'],
+                $validated['user_id'],
+                $validated['thesis_course'],
+                $validated['abstract'],
+                $similarityData,
+                $isPlagiarized,
+            ];
+
+            fputcsv($fileHandle, $csvData);
+            fclose($fileHandle);
         } else {
-            Log::warning('AI check result not set for thesis ID ' . $thesis->id);
+            Log::error('Could not open CSV file for writing.');
+        }
+
+        return redirect()->route('thesis.index')->with([
+            'success' => 'Thesis uploaded successfully.',
+            'insightsText' => $insightsText,
+            'similarityDetails' => $similarityDetails,
+            'thesisFilePath' => $thesisFilePath,
+        ]);
+    } */
+
+    public function store(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'thesis_title' => 'required|string|max:255',
+            'thesis_file' => 'required|file|mimes:pdf',
+            'thesis_course' => 'required|string|max:255',
+            'abstract' => 'required|string',
+        ]);
+
+        // Store the uploaded file
+        $validated['thesis_file'] = $request->file('thesis_file')->store('public/thesis');
+        $validated['user_id'] = auth()->id();
+        $thesis = Thesis::create($validated);
+
+        // Parse the PDF
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdfPath = storage_path('app/' . $validated['thesis_file']);
+        try {
+            $pdf = $parser->parseFile($pdfPath);
+            $text = $pdf->getText();
+        } catch (\Exception $e) {
+            Log::error('PDF parsing error for thesis ID ' . $thesis->id . ': ' . $e->getMessage());
+            return redirect()->route('thesis.index')->with('error', 'There was an error processing the PDF.');
+        }
+
+
+        $tempFilePath = storage_path('app/temp_thesis.txt');
+        file_put_contents($tempFilePath, $text);
+
+
+        $command = escapeshellcmd("python C:/Users/User/pycharmProjects/plagiarizedChecker/ai_detector.py " . escapeshellarg($tempFilePath));
+        $output = shell_exec($command . ' 2>&1');
+        unlink($tempFilePath); // Clean up temporary file
+
+        if ($output === null || empty($output)) {
+            Log::error('Error executing Python script for thesis ID ' . $thesis->id . ': Output is null or empty.');
+            return redirect()->route('thesis.index')->with('error', 'There was an error processing your thesis.');
+        }
+
+        Log::info('Python script output for thesis ID ' . $thesis->id . ': ' . $output);
+
+        $similarityResult = json_decode($output, true);
+        Log::info('Similarity check result for thesis ID ' . $thesis->id, ['result' => $similarityResult]);
+
+
+        $similarityScores = $similarityResult['similarities'] ?? [];
+        $matchingTexts = $similarityResult['matching_texts'] ?? [];
+        $isPlagiarized = !empty($matchingTexts) ? 1 : 0;
+
+
+        $aiContentPercentage = 0;
+        if (count($similarityScores) > 0) {
+            $aiContentPercentage = round((array_sum($similarityScores) / count($similarityScores)) * 100, 2);
+        }
+
+
+        $thesis->update([
+            'similarity' => json_encode($similarityResult),
+            'plagiarized' => $isPlagiarized
+        ]);
+
+
+        $csvFilePath = 'C:/Users/User/pycharmProjects/plagiarizedChecker/thesis-folder-csv/thesis_data.csv';
+        $fileHandle = fopen($csvFilePath, 'a');
+        if ($fileHandle !== false) {
+            if (filesize($csvFilePath) === 0) {
+                fputcsv($fileHandle, ['Thesis Title', 'User ID', 'Course', 'Abstract', 'Similarity', 'Plagiarized']);
+            }
+            $csvData = [
+                $validated['thesis_title'],
+                $validated['user_id'],
+                $validated['thesis_course'],
+                $validated['abstract'],
+                json_encode($similarityResult),
+                $isPlagiarized
+            ];
+            fputcsv($fileHandle, $csvData);
+            fclose($fileHandle);
+        } else {
+            Log::error('Could not open CSV file for writing.');
         }
 
 
         return redirect()->route('thesis.index')->with([
-            'success' => 'Thesis created successfully.',
-            'aiCheckStatus' => $aiCheckStatus,
-            'insightsText' => $insightsText, // Include insights for SweetAlert
+            'success' => 'Thesis uploaded successfully.',
+            'insightsText' => $isPlagiarized ? "AI Content Detected" : "No AI Content Detected",
+            'similarityDetails' => "AI Content Percentage: " . $aiContentPercentage . "%",
+            'matchingTexts' => $matchingTexts,
+            'thesisFilePath' => asset('storage/thesis/' . basename($validated['thesis_file']))
         ]);
     }
 
 
-
-    private function checkAiContentFromPdf($filePath, $thesisId)
+    /*    private function checkAiContentFromPdf($filePath, $thesisId)
     {
         $client = new \GuzzleHttp\Client();
 
@@ -181,7 +285,7 @@ class ThesisController extends Controller
 
             return json_encode(['data' => ['isAi' => false, 'nlp' => []]]);
         }
-    }
+    } */
 
 
 

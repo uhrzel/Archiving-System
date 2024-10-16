@@ -196,36 +196,56 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-@if(session('success'))
+<!-- @if(session('success'))
 <script>
-    const insightsText = `{{ session('insightsText', 'No AI-generated content detected.') }}`;
+    const insightsText = `{{ session('insightsText', 'No significant similarity detected.') }}`;
+    const thesisFilePath = `{{ session('thesisFilePath') }}`;
+    const matchingTexts = @json(session('matchingTexts', []));
     let backgroundClass;
-    let iconType;
-    console.log(insightsText);
+    let iconHtml;
 
 
-    if (insightsText === "AI-generated content detected") {
+    if (insightsText === "AI Content Detected.") {
         backgroundClass = 'swal-red';
-        iconType = 'success';
-    } else if (insightsText === "No AI-generated content detected.") {
-        backgroundClass = 'swal-green'; // Set to green background
-        iconType = 'success';
+        iconHtml = `<i class="fas fa-exclamation-triangle" style="color: orange;"></i> AI Content Detected.`;
+    } else if (insightsText === "No AI Content Detected.") {
+        backgroundClass = 'swal-green';
+        iconHtml = `<i class="fas fa-check-circle" style="color: green;"></i> No AI Content Detected.`;
     } else {
         // Fallback case
         backgroundClass = 'swal-green'; // Default to green
-        iconType = 'info';
+        iconHtml = `<i class="fas fa-info-circle" style="color: blue;"></i> Information: ${insightsText}`;
+    }
+    let matchedTextHtml = '';
+    if (matchingTexts.length > 0) {
+        matchedTextHtml = `<div><strong>AI Content Found:</strong></div>`;
+        matchedTextHtml += '<ul>';
+        matchingTexts.forEach(text => {
+            matchedTextHtml += `<li style="background-color: yellow;">${text}</li>`;
+        });
+        matchedTextHtml += '</ul>';
     }
 
+    const sweetAlertContent = `
+        <div>
+            <span class="swal2-html ${backgroundClass}">${iconHtml}</span>
+            <br><br>
+            <iframe src="${thesisFilePath}" style="width: 100%; height: 300px; border: none;"></iframe>
+            <br><br>
+            ${matchedTextHtml}
+        </div>
+    `;
+
+    // Display SweetAlert
     Swal.fire({
         title: 'Thesis Uploaded Successfully',
-        html: `<span class="swal2-html ${backgroundClass}">${insightsText}</span>`,
-        icon: iconType,
+        html: sweetAlertContent,
+        icon: 'success',
         confirmButtonText: 'OK',
         background: '#f8f9fa'
     });
 </script>
 @endif
-
 
 @if($errors->any())
 <script>
@@ -233,12 +253,63 @@
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: "{{ $errors->first() }}",
-            confirmButtonText: 'Okay'
+            text: 'There was an error uploading your thesis.',
+            confirmButtonText: 'OK',
+            background: '#f8f9fa'
         });
     });
 </script>
+@endif -->
+
+
+@if(session('success'))
+<script>
+    const insightsText = `{{ session('insightsText', 'No significant similarity detected.') }}`;
+    const similarityDetails = `{{ session('similarityDetails') }}`;
+    const thesisFilePath = `{{ session('thesisFilePath') }}`;
+    const matchingTexts = @json(session('matchingTexts', []));
+
+    let backgroundClass, iconHtml;
+    if (insightsText === "AI Content Detected") {
+        backgroundClass = 'swal-red';
+        iconHtml = `<i class="fas fa-exclamation-triangle" style="color: orange;"></i> AI Content Detected.`;
+    } else {
+        backgroundClass = 'swal-green';
+        iconHtml = `<i class="fas fa-check-circle" style="color: green;"></i> No AI Content Detected.`;
+    }
+
+    let matchedTextHtml = '';
+    if (matchingTexts.length > 0) {
+        matchedTextHtml = `<div><strong>AI Content Found:</strong></div><ul>`;
+        matchingTexts.forEach(text => {
+            matchedTextHtml += `<li style="background-color: yellow;">${text}</li>`;
+        });
+        matchedTextHtml += '</ul>';
+    }
+
+    const sweetAlertContent = `
+        <div>
+            <span class="swal2-html ${backgroundClass}">${iconHtml}</span>
+            <br><br>
+            <iframe src="${thesisFilePath}" style="width: 100%; height: 300px; border: none;"></iframe>
+            <br><br>
+            <strong>${similarityDetails}</strong>
+            <br><br>
+            ${matchedTextHtml}
+        </div>
+    `;
+
+    Swal.fire({
+        title: 'Thesis Uploaded Successfully',
+        html: sweetAlertContent,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        background: '#f8f9fa'
+    });
+</script>
 @endif
+
+
 
 
 @if(session('delete_success'))
