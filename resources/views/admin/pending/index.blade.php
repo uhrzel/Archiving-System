@@ -71,12 +71,12 @@
                             </td>
                             <td>
                                 @if($thesis_data->plagiarized == '1')
-                                <span class="bg-danger text-white px-2 py-1 rounded">
+                                <span class="bg-danger text-white px-1 py-1 rounded">
                                     <i class="fa fa-exclamation-circle"></i> <!-- Warning icon -->
                                     Plagiarized
                                 </span>
                                 @elseif($thesis_data->plagiarized == '0')
-                                <span class="bg-success text-white px-2 py-1 rounded">
+                                <span class="bg-success text-white px-3 py-1 rounded">
                                     <i class="fa fa-check-circle"></i> <!-- Success icon -->
                                     Original
                                 </span>
