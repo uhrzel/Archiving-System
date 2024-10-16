@@ -243,6 +243,7 @@ class ThesisController extends Controller
             'success' => 'Thesis uploaded successfully.',
             'insightsText' => $isPlagiarized ? "AI Content Detected" : "No AI Content Detected",
             'similarityDetails' => "AI Content Percentage: " . $aiContentPercentage . "%",
+            'aiContentPercentage' => $aiContentPercentage,
             'matchingTexts' => $matchingTexts,
             'thesisFilePath' => asset('storage/thesis/' . basename($validated['thesis_file']))
         ]);

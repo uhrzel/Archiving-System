@@ -261,8 +261,56 @@
 </script>
 @endif -->
 
-
 @if(session('success'))
+<style>
+    .animated-percentage {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4a4a4a;
+        margin-top: 10px;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .percentage-bar {
+        width: 100%;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .percentage-fill {
+        height: 20px;
+        background-color: #76c7c0;
+        width: 0;
+        /* Start with width 0, will be animated */
+        border-radius: 5px;
+        transition: width 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .swal2-html {
+        font-size: 16px;
+    }
+
+    .matching-text {
+        background-color: yellow;
+        padding: 5px;
+        border-radius: 3px;
+        margin: 2px 0;
+    }
+</style>
+
 <script>
     const insightsText = `{{ session('insightsText', 'No significant similarity detected.') }}`;
     const similarityDetails = `{{ session('similarityDetails') }}`;
@@ -282,10 +330,19 @@
     if (matchingTexts.length > 0) {
         matchedTextHtml = `<div><strong>AI Content Found:</strong></div><ul>`;
         matchingTexts.forEach(text => {
-            matchedTextHtml += `<li style="background-color: yellow;">${text}</li>`;
+            matchedTextHtml += `<li class="matching-text">${text}</li>`;
         });
         matchedTextHtml += '</ul>';
     }
+
+    // AI Content Percentage
+    const aiContentPercentage = `{{ session('aiContentPercentage') }}`;
+    const percentageHtml = `
+        <div class="animated-percentage">AI Content Percentage: <span id="percentage">${aiContentPercentage}%</span></div>
+        <div class="percentage-bar">
+            <div class="percentage-fill" style="width: ${aiContentPercentage}%;"></div>
+        </div>
+    `;
 
     const sweetAlertContent = `
         <div>
@@ -293,9 +350,10 @@
             <br><br>
             <iframe src="${thesisFilePath}" style="width: 100%; height: 300px; border: none;"></iframe>
             <br><br>
-            <strong>${similarityDetails}</strong>
             <br><br>
             ${matchedTextHtml}
+            <br>
+            ${percentageHtml}
         </div>
     `;
 
@@ -308,7 +366,6 @@
     });
 </script>
 @endif
-
 
 
 
